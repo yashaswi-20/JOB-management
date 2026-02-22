@@ -13,7 +13,7 @@ export const registerCompany=async(req,res)=>{
             name:companyName,
             userId:req.id
         })
-        return res.status(201).json({ msg: 'Company registered successfully' })
+        return res.status(201).json({ msg: 'Company registered successfully',company })
 
     }catch(err){
         return res.status(500).json({ msg: err.message })
@@ -59,6 +59,6 @@ export const updateCompany=async(req,res)=>{
         return res.status(200).json({ msg: 'Company updated successfully',company:update })
 
     }catch(err){
-        return res.status(500).json({ msg: err.message })
+        return res.status(500).json({ msg: err.message,success:false })
     }
 }

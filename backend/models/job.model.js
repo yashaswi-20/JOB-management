@@ -30,14 +30,23 @@ const jobSchema=new mongoose.Schema({
         type:String,
         required:true
     },
+    experienceYear:{
+        type:Number,
+        required:true
+    },
     company:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Company',
         required:true
     },
-    applicants:[{
+    createdBy:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Users'
+        ref:'User',
+        required:true
+    },
+    applications:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Application'
     }]
 },{timestamps:true})
 
