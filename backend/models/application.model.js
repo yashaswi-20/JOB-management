@@ -6,7 +6,7 @@ const applicationSchema=new mongoose.Schema({
         ref:'Job',
         required:true
     },
-    applicants:{
+    applicant:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Users',
         required:true
@@ -17,4 +17,5 @@ const applicationSchema=new mongoose.Schema({
         default:'Pending'
     }
 },{timestamps:true})
+
 export default mongoose.model('Application',applicationSchema);
