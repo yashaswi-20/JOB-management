@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, User2 } from "lucide-react";
 
 const Navbar = () => {
-  const user = true;
+  const user = false;
 
   return (
     <div className="bg-white">
@@ -24,8 +24,8 @@ const Navbar = () => {
           </ul>
           {!user ? (
             <div className="flex items-center gap-2">
-              <Button variant="outline">Login</Button>
-              <Button className="bg-purple-400 hover:bg-purple-600">Signup</Button>
+              <Link to="/login"><Button variant="outline" className="hover:bg-zinc-300 cursor-pointer">Login</Button></Link>
+              <Link to="/signup"><Button className="bg-purple-400 hover:bg-purple-600 cursor-pointer">Signup</Button> </Link>
             </div>
           ) : (
             <Popover>
