@@ -7,7 +7,7 @@ import { LogOut, User2 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { ModeToggle } from "@/components/ModeToggle";
 import { logoutUser } from "@/redux/authSlice";
-
+import { setSearchedQuery } from "@/redux/jobSlice";
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
