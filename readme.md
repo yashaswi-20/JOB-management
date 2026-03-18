@@ -1,181 +1,106 @@
-# 💼 JobPortal — Full-Stack Job Management Platform
+# 💼 JobPortal — Modern Full-Stack Recruitment Platform
 
-A full-stack **MERN** (MongoDB, Express, React, Node.js) web application that connects **job seekers** and **recruiters** on a single platform. Recruiters can register companies, post job listings, and manage applicants. Students can browse jobs, apply, and track their application status.
-
----
-
-## ✨ Features
-
-### 👤 Authentication & Authorization
-- User registration & login with **JWT-based** authentication
-- Secure password hashing with **bcryptjs**
-- Role-based access — **Student** and **Recruiter**
-- Protected routes via authentication middleware
-
-### 🏢 Company Management *(Recruiter)*
-- Register and manage company profiles
-- Add company details — name, description, location, website, logo
-
-### 📋 Job Listings *(Recruiter)*
-- Create job postings with title, description, requirements, salary, location, type, experience, and positions
-- View all jobs posted by the logged-in recruiter
-
-### 🔍 Job Discovery *(Student)*
-- Browse and search all available job listings
-- View detailed job information
-
-### 📝 Application Workflow
-- Students can apply to jobs
-- Recruiters can view applicants for their postings
-- Update application status — **Pending → Accepted / Rejected**
+JobPortal is a high-performance **MERN** application designed to streamline the connection between top-tier talent and recruiters. Built with a focus on modern aesthetics (glassmorphism/minimalism) and technical efficiency, it offers a dual-role experience for Students and Recruiters.
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 Key Modules & Functionality
 
-| Layer       | Technology                                                      |
-| ----------- | --------------------------------------------------------------- |
-| **Frontend**| React 19, Vite, React Router, Redux Toolkit, Tailwind CSS 4, shadcn/ui, Axios |
-| **Backend** | Node.js, Express 5, Mongoose, JWT, bcryptjs, cookie-parser      |
-| **Database**| MongoDB Atlas                                                    |
+### 👤 User & Authentication
+- **Secure Auth**: Implements JWT-based authentication stored in HttpOnly cookies to prevent XSS.
+- **Role-Based Access Control (RBAC)**: Distinct permissions for `Student` and `Recruiter` across the entire application.
+- **Dynamic Profiles**: Students can update their bio, skills, and upload resumes, with real-time feedback via **Sonner** toasts.
+
+### 🏢 Recruiter Workflow
+- **Company Branding**: Register organizations and upload hi-res logos directly to **Cloudinary**.
+- **Job Orchestration**: Full CRUD for job postings with detailed metadata (salary, location, type, experience level).
+- **Candidate Pipeline**: A dedicated dashboard for every job listing to view applicants, download resumes, and update hiring statuses (**Pending**, **Accepted**, **Rejected**).
+
+### 🔍 Student & Candidate Experience
+- **Advanced Job Search**: Instant filtering by title, company, or location on the Home and Jobs pages.
+- **Company Directory**: A public "Browse" tab to explore all registered organizations and their mission.
+- **Application Status**: Track all your submissions in one place with color-coded status badges.
+- **Smart Logic**: Prevents duplicate applications and provides instant loading states during the submission process.
 
 ---
 
-## 📁 Project Structure
+## 🛠️ Technical Implementation
 
-```
+| Layer | Technologies | Highlights |
+|---|---|---|
+| **Frontend** | React 19, Vite, Tailwind CSS 4 | Glassmorphic UI via **Shadcn UI**, specialized hooks for data fetching. |
+| **Backend** | Node.js, Express 5 | Robust MVC architecture, request validation, and cookie-based sessions. |
+| **Storage** | Cloudinary, Multer | On-the-fly image processing and secure document uploads. |
+| **State** | Redux Toolkit, Redux Persist | Persistent user sessions and cross-component search query synchronization. |
+| **Database** | MongoDB Atlas | Complex aggregations and `.populate()` for deep relational data. |
+
+---
+
+## 📂 Project Structure
+
+```bash
 JOB-management/
 ├── backend/
-│   ├── controllers/          # Route handler logic
-│   │   ├── user.controller.js
-│   │   ├── company.controller.js
-│   │   ├── job.controller.js
-│   │   └── application.controller.js
-│   ├── middlewares/
-│   │   └── isAuthenticated.js   # JWT auth middleware
-│   ├── models/               # Mongoose schemas
-│   │   ├── user.model.js
-│   │   ├── company.model.js
-│   │   ├── job.model.js
-│   │   └── application.model.js
-│   ├── routes/               # Express route definitions
-│   │   ├── user.route.js
-│   │   ├── company.route.js
-│   │   ├── job.route.js
-│   │   └── application.route.js
-│   ├── utils/
-│   │   └── db.js             # MongoDB connection
-│   ├── index.js              # Server entry point
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── auth/         # Login & SignUp pages
-│   │   │   ├── shared/       # Navbar & shared UI
-│   │   │   └── ui/           # shadcn/ui components
-│   │   ├── lib/              # Utility helpers
-│   │   ├── App.jsx           # Routes & app shell
-│   │   └── main.jsx          # React entry point
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
-├── .env                      # Environment variables (git-ignored)
-├── .gitignore
-└── readme.md
+│   ├── controllers/      # Business logic (User, Job, Company, Application)
+│   ├── models/           # Mongoose schemas with validation
+│   ├── routes/           # RESTful API endpoints
+│   ├── middlewares/      # JWT auth & Multer file handling
+│   └── index.js          # Entry point with Express & DB connection
+└── frontend/
+    ├── src/
+    │   ├── components/   # Atomic UI components, Admin views, Auth flows
+    │   ├── hooks/        # Custom data fetchers (useGetAllJobs, useGetAllCompanies)
+    │   ├── redux/        # Global state (auth, job, company, application)
+    │   └── lib/          # Axios instance & shared utilities
+    ├── tailwind.config.js
+    └── vite.config.js
 ```
 
 ---
 
-## 🔌 API Endpoints
+## 🔌 Core API Documentation
 
-### User — `/api/v1/user`
-| Method | Endpoint           | Auth | Description            |
-| ------ | ------------------ | ---- | ---------------------- |
-| POST   | `/register`        | ✗    | Register a new user    |
-| POST   | `/login`           | ✗    | Login & receive token  |
-| POST   | `/profile/update`  | ✓    | Update user profile    |
-| GET    | `/logout`          | ✗    | Logout & clear cookie  |
-
-### Company — `/api/v1/company`
-| Method | Endpoint       | Auth | Description              |
-| ------ | -------------- | ---- | ------------------------ |
-| POST   | `/register`    | ✓    | Register a new company   |
-| GET    | `/get`         | ✓    | Get logged-in user's companies |
-| GET    | `/get/:id`     | ✓    | Get company by ID        |
-| PUT    | `/update/:id`  | ✓    | Update company details   |
-
-### Job — `/api/v1/job`
-| Method | Endpoint        | Auth | Description                   |
-| ------ | --------------- | ---- | ----------------------------- |
-| POST   | `/post`         | ✓    | Create a new job posting      |
-| GET    | `/get`          | ✓    | Get all jobs (with search)    |
-| GET    | `/get/:id`      | ✓    | Get job by ID                 |
-| GET    | `/getadminjobs` | ✓    | Get jobs posted by recruiter  |
-
-### Application — `/api/v1/application`
-| Method | Endpoint            | Auth | Description                     |
-| ------ | ------------------- | ---- | ------------------------------- |
-| POST   | `/apply/:id`        | ✓    | Apply to a job                  |
-| GET    | `/getjobs`          | ✓    | Get jobs the user has applied to|
-| POST   | `/getapplicants/:id`| ✓    | Get applicants for a job        |
-| POST   | `/update/:id`       | ✓    | Update application status       |
+| Endpoint | Method | Auth | Description |
+|---|---|---|---|
+| `/api/user/profile/update` | POST | Yes | Update bio, skills, and professional profile. |
+| `/api/job/get` | GET | Yes | Fetch and filter all jobs via query params. |
+| `/api/company/register` | POST | Yes | Initialize a new organization profile. |
+| `/api/application/apply/:id`| POST | Yes | Secure job submission with duplication checks. |
+| `/api/application/update/:id`| POST | Yes | Recruiter status update for a candidate. |
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Local Development & Setup
 
-### Prerequisites
+### 1. Prerequisites
+- **Node.js** v20+
+- **npm** v10+
+- **MongoDB Atlas** Cluster
 
-- **Node.js** v18 or later
-- **npm** v9 or later
-- A **MongoDB Atlas** cluster (or local MongoDB instance)
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/<your-username>/JOB-management.git
-cd JOB-management
-```
-
-### 2. Configure environment variables
-
-Create a `.env` file in the project root:
-
+### 2. Environment Setup
+Create a `.env` in the `backend` folder:
 ```env
-MONGO_URI=your_mongodb_connection_string
 PORT=3000
-SECRET_KEY=your_jwt_secret_key
+MONGO_URI=your_atlas_connection_string
+SECRET_KEY=your_secure_jwt_secret
+CLOUD_NAME=your_cloudinary_name
+API_KEY=your_cloudinary_key
+API_SECRET=your_cloudinary_secret
 ```
 
-### 3. Install dependencies
-
+### 3. Execution
 ```bash
-# Backend
-cd backend
-npm install
+# Clone & Install
+git clone https://github.com/your-username/JOB-management.git
+npm install # in both root and /frontend
 
-# Frontend
-cd ../frontend
-npm install
+# Run Servers
+# Terminal 1 (Backend)
+cd backend && npm run dev
+
+# Terminal 2 (Frontend)
+cd frontend && npm run dev
 ```
-
-### 4. Run the application
-
-```bash
-# Start backend (from /backend)
-npm run dev
-
-# Start frontend (from /frontend)
-npm run dev
-```
-
-| Service  | URL                        |
-| -------- | -------------------------- |
-| Frontend | http://localhost:5173       |
-| Backend  | http://localhost:3000       |
-
----
 
 ## 📄 License
-
-This project is licensed under the **ISC License**.
+Licensed under the ISC License. Portions of the UI leverage open-source Shadcn components.
