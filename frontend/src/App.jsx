@@ -14,6 +14,8 @@ import Applicants from "./components/admin/Applicants.jsx"
 import JobDescription from "./components/JobDescription.jsx"
 import Profile from "./components/Profile.jsx"
 import MyApplications from "./components/MyApplications.jsx"
+import ProtectedRoute from "./components/ProtectedRoute.jsx"
+import AdminRoute from "./components/admin/AdminRoute.jsx"
 import { Toaster } from 'sonner'
 
 function App() {
@@ -25,31 +27,31 @@ function App() {
     },
     {
       path:'/profile',
-      element:<Profile/>
+      element:<ProtectedRoute><Profile/></ProtectedRoute>
     },
     {
       path:'/admin/jobs',
-      element:<AdminJobs/>
+      element:<AdminRoute><AdminJobs/></AdminRoute>
     },
     {
       path:'/admin/jobs/create',
-      element:<PostJob/>
+      element:<AdminRoute><PostJob/></AdminRoute>
     },
     {
       path:'/admin/jobs/:id/applicants',
-      element:<Applicants/>
+      element:<AdminRoute><Applicants/></AdminRoute>
     },
     {
       path:'/admin/companies',
-      element:<Companies/>
+      element:<AdminRoute><Companies/></AdminRoute>
     },
     {
       path:'/admin/companies/create',
-      element:<CompanyCreate/>
+      element:<AdminRoute><CompanyCreate/></AdminRoute>
     },
     {
       path:'/admin/companies/:id',
-      element:<CompanySetup/>
+      element:<AdminRoute><CompanySetup/></AdminRoute>
     },
     {
       path:'/jobs',
@@ -65,7 +67,7 @@ function App() {
     },
     {
       path:'/applications',
-      element:<MyApplications/>
+      element:<ProtectedRoute><MyApplications/></ProtectedRoute>
     },
     {
       path:'/signup',
