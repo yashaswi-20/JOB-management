@@ -44,7 +44,9 @@ const Navbar = () => {
                 <li className="hover:text-foreground transition-colors"><Link to="/">Home</Link></li>
                 <li className="hover:text-foreground transition-colors"><Link to="/jobs" onClick={() => dispatch(setSearchedQuery(""))}>Jobs</Link></li>
                 <li className="hover:text-foreground transition-colors"><Link to="/browse">Browse</Link></li>
-                <li className="hover:text-foreground transition-colors"><Link to="/applications">Applications</Link></li>
+                {user && (
+                  <li className="hover:text-foreground transition-colors"><Link to="/applications">Applications</Link></li>
+                )}
               </>
             )}
           </ul>
