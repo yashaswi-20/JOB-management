@@ -1,25 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { MoreHorizontal } from 'lucide-react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { toast } from 'sonner'
 import api from '@/lib/axios'
+import { setApplicants } from '@/redux/applicationSlice'
 
 const shortlistingStatus = ["Accepted", "Rejected"];
 
 const ApplicantsTable = () => {
     const { applicants } = useSelector(store => store.application);
+    const dispatch = useDispatch();
+    const [openRow, setOpenRow] = useState(null);
 
     const statusHandler = async (status, id) => {
         try {
             const res = await api.post(`/application/update/${id}`, { status }, { withCredentials: true });
             if (res.data.success) {
                 toast.success(res.data.message);
-                // Ideally, we'd update the Redux state here instead of waiting for a reload.
+                const updatedApplicants = applicants.map(app => 
+                    app._id === id ? { ...app, status: status } : app
+                );
+                dispatch(setApplicants(updatedApplicants));
+                setOpenRow(null);
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "An error occurred");
         }
     }
 
@@ -34,6 +41,7 @@ const ApplicantsTable = () => {
                         <TableHead className="font-semibold text-foreground">Contact</TableHead>
                         <TableHead className="font-semibold text-foreground">Resume</TableHead>
                         <TableHead className="font-semibold text-foreground">Date</TableHead>
+                        <TableHead className="font-semibold text-foreground">Status</TableHead>
                         <TableHead className="text-right font-semibold text-foreground">Action</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -50,8 +58,13 @@ const ApplicantsTable = () => {
                                     }
                                 </TableCell>
                                 <TableCell>{item?.applicant?.createdAt?.split("T")[0]}</TableCell>
+                                <TableCell>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${item?.status === 'Accepted' ? 'bg-green-100 text-green-700' : item?.status === 'Rejected' ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                                        {item?.status || 'Pending'}
+                                    </span>
+                                </TableCell>
                                 <TableCell className="text-right">
-                                    <Popover>
+                                    <Popover open={openRow === item._id} onOpenChange={(isOpen) => setOpenRow(isOpen ? item._id : null)}>
                                         <PopoverTrigger className="p-2 hover:bg-muted rounded-full transition-colors">
                                             <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                                         </PopoverTrigger>

@@ -26,7 +26,7 @@ const Navbar = () => {
         <div>
           <Link to="/">
             <h1 className="text-xl font-bold tracking-tight text-foreground">
-              Job<span className="text-muted-foreground font-medium">Portal</span>
+              Talent<span className="text-muted-foreground font-medium">Rush</span>
             </h1>
           </Link>
         </div>

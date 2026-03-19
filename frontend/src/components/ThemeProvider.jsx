@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeProviderContext = createContext();
 
-export function ThemeProvider({ children, defaultTheme = "system", storageKey = "jobportal-theme", ...props }) {
+export function ThemeProvider({ children, defaultTheme = "system", storageKey = "talentrush-theme", ...props }) {
   const [theme, setTheme] = useState(
     () => localStorage.getItem(storageKey) || defaultTheme
   );

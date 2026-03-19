@@ -4,12 +4,18 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import getDataUri from '../utils/datauri.js';
 import cloudinary from '../utils/cloudinary.js';
+import { verifyTurnstileToken } from '../utils/verifyCaptcha.js';
 
 export const register = async (req, res) => {
     try {
-        const { fullname, email, password, phoneNumber, role } = req.body;
+        const { fullname, email, password, phoneNumber, role, captchaToken } = req.body;
         if (!fullname || !email || !password || !phoneNumber || !role) {
             return res.status(400).json({ msg: 'All fields are required' })
+        }
+
+        const captchaVerification = await verifyTurnstileToken(captchaToken);
+        if (!captchaVerification.success) {
+            return res.status(400).json({ msg: captchaVerification.msg || 'CAPTCHA validation failed' });
         }
         const file = req.file;
         let profilePhotoUrl = '';
@@ -44,9 +50,14 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password, role } = req.body;
+        const { email, password, role, captchaToken } = req.body;
         if (!email || !password || !role) {
             return res.status(400).json({ msg: 'All fields are required' })
+        }
+
+        const captchaVerification = await verifyTurnstileToken(captchaToken);
+        if (!captchaVerification.success) {
+            return res.status(400).json({ msg: captchaVerification.msg || 'CAPTCHA validation failed' });
         }
         let user = await Users.findOne({ email });
         if (!user) {

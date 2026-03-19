@@ -1,6 +1,6 @@
-# 💼 JobPortal — Modern Full-Stack Recruitment Platform
+# 💼 TalentRush — Modern Full-Stack Recruitment Platform
 
-JobPortal is a high-performance **MERN** application designed to streamline the connection between top-tier talent and recruiters. Built with a focus on modern aesthetics (glassmorphism/minimalism) and technical efficiency, it offers a dual-role experience for Students and Recruiters.
+TalentRush is a high-performance **MERN** application designed to streamline the connection between top-tier talent and recruiters. Built with a focus on modern aesthetics (glassmorphism/minimalism) and technical efficiency, it offers a dual-role experience for Students and Recruiters.
 
 ---
 

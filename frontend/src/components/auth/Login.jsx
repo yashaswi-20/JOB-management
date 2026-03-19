@@ -9,6 +9,7 @@ import { setAuthUser } from '@/redux/authSlice';
 import api from '@/lib/axios';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -16,6 +17,7 @@ const Login = () => {
     password: '',
     role: 'Student'
   });
+  const [captchaToken, setCaptchaToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,9 +28,14 @@ const Login = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!captchaToken) {
+      toast.error("Please complete the CAPTCHA validation");
+      return;
+    }
+    
     try {
       setLoading(true);
-      const res = await api.post('/user/login', input);
+      const res = await api.post('/user/login', { ...input, captchaToken });
       if (res.data.success) {
         dispatch(setAuthUser(res.data.user));
         toast.success(res.data.msg);
@@ -102,6 +109,12 @@ const Login = () => {
           </div>
 
           <div className="mt-8">
+            <div className="mb-4 flex justify-center">
+              <Turnstile 
+                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
+                onSuccess={(token) => setCaptchaToken(token)} 
+              />
+            </div>
             <Button type="submit" disabled={loading} className="w-full h-12 rounded-lg text-base shadow-md">
               {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Log In'}
             </Button>

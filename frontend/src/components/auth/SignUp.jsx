@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 import { Loader2, UploadCloud } from "lucide-react";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 const SignUp = () => {
   const [input, setInput] = useState({
@@ -17,6 +18,7 @@ const SignUp = () => {
     role: "Student",
     file: ""
   });
+  const [captchaToken, setCaptchaToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -30,6 +32,11 @@ const SignUp = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!captchaToken) {
+      toast.error("Please complete the CAPTCHA validation");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("fullname", input.fullname);
     formData.append("email", input.email);
@@ -39,6 +46,7 @@ const SignUp = () => {
     if (input.file) {
       formData.append("file", input.file);
     }
+    formData.append("captchaToken", captchaToken);
 
     try {
       setLoading(true);
@@ -161,6 +169,12 @@ const SignUp = () => {
           </div>
 
           <div className="mt-8">
+            <div className="mb-4 flex justify-center">
+              <Turnstile 
+                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
+                onSuccess={(token) => setCaptchaToken(token)} 
+              />
+            </div>
             <Button type="submit" disabled={loading} className="w-full h-12 rounded-lg text-base shadow-md">
               {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Create Account'}
             </Button>

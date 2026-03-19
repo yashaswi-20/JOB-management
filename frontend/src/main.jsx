@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider defaultTheme="light" storageKey="jobportal-theme">
+        <ThemeProvider defaultTheme="light" storageKey="talentrush-theme">
           <App />
         </ThemeProvider>
       </PersistGate>

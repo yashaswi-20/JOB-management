@@ -125,7 +125,7 @@ const Home = () => {
       {/* Footer */}
       <footer className="py-12 border-t border-border/30 bg-background text-muted-foreground">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-sm">
-          <p>© 2026 JobPortal. All rights reserved.</p>
+          <p>© 2026 TalentRush. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0 font-medium">
             <Link to="#" className="hover:text-foreground transition-colors">Twitter</Link>
             <Link to="#" className="hover:text-foreground transition-colors">GitHub</Link>
