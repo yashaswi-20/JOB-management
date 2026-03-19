@@ -16,6 +16,7 @@ import Profile from "./components/Profile.jsx"
 import MyApplications from "./components/MyApplications.jsx"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import AdminRoute from "./components/admin/AdminRoute.jsx"
+import StudentRoute from "./components/StudentRoute.jsx"
 import { Toaster } from 'sonner'
 
 function App() {
@@ -67,7 +68,7 @@ function App() {
     },
     {
       path:'/applications',
-      element:<ProtectedRoute><MyApplications/></ProtectedRoute>
+      element:<StudentRoute><MyApplications/></StudentRoute>
     },
     {
       path:'/signup',
