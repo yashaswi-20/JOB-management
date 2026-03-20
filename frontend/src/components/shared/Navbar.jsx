@@ -1,5 +1,4 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,14 +7,26 @@ import { useSelector, useDispatch } from "react-redux";
 import { ModeToggle } from "@/components/ModeToggle";
 import { logoutUser } from "@/redux/authSlice";
 import { setSearchedQuery } from "@/redux/jobSlice";
+import { toast } from "sonner";
+import api from "@/lib/axios";
+
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Ideally this calls the backend API and then dispatches the action.
-    // Assuming backend handles the cookie, we just clear Redux.
-    dispatch(logoutUser());
+  const handleLogout = async () => {
+    try {
+      const res = await api.get('/user/logout');
+      if (res.data.success) {
+        dispatch(logoutUser());
+        navigate("/login");
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.msg || "Failed to logout");
+    }
   };
 
   return (

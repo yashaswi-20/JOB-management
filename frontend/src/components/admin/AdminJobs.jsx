@@ -4,19 +4,20 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Search } from 'lucide-react';
 import api from '@/lib/axios';
-import { setAllAdminJobs } from '@/redux/jobSlice';
+import { setAllAdminJobs, setLoading } from '@/redux/jobSlice';
+import { Loader2, Search } from 'lucide-react';
 
 const AdminJobs = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { allAdminJobs } = useSelector(store => store.job);
+    const { allAdminJobs, loading } = useSelector(store => store.job);
     const [search, setSearch] = useState("");
 
     useEffect(() => {
         const fetchAdminJobs = async () => {
             try {
+                dispatch(setLoading(true));
                 const res = await api.get('/job/getadminjobs');
                 if (res.data.success) {
                     dispatch(setAllAdminJobs(res.data.jobs));
@@ -24,6 +25,8 @@ const AdminJobs = () => {
             } catch (error) {
                 console.log(error);
                 dispatch(setAllAdminJobs([]));
+            } finally {
+                dispatch(setLoading(false));
             }
         };
         fetchAdminJobs();
@@ -66,7 +69,11 @@ const AdminJobs = () => {
                     </div>
                 </div>
 
-                {filteredJobs.length === 0 ? (
+                {loading ? (
+                    <div className="h-64 flex items-center justify-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
+                    </div>
+                ) : filteredJobs.length === 0 ? (
                     <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-xl bg-muted/5">
                         <p className="text-muted-foreground font-light mb-4">
                             You haven't posted any jobs yet.

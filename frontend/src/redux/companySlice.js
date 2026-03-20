@@ -6,6 +6,10 @@ const companySlice = createSlice({
         singleCompany: null,
         companies: [],
         searchCompanyByText: "",
+        loading: false,
+        currentPage: 1,
+        totalPages: 1,
+        totalCompanies: 0,
     },
     reducers: {
         setSingleCompany: (state, action) => {
@@ -16,9 +20,27 @@ const companySlice = createSlice({
         },
         setSearchCompanyByText: (state, action) => {
             state.searchCompanyByText = action.payload;
+        },
+        setLoading: (state, action) => {
+            state.loading = action.payload;
+        },
+        setPagination: (state, action) => {
+            state.currentPage = action.payload.currentPage;
+            state.totalPages = action.payload.totalPages;
+            state.totalCompanies = action.payload.totalCompanies;
+        },
+        setCurrentPage: (state, action) => {
+            state.currentPage = action.payload;
         }
     }
 });
 
-export const { setSingleCompany, setCompanies, setSearchCompanyByText } = companySlice.actions;
+export const { 
+    setSingleCompany, 
+    setCompanies, 
+    setSearchCompanyByText, 
+    setLoading, 
+    setPagination, 
+    setCurrentPage 
+} = companySlice.actions;
 export default companySlice.reducer;

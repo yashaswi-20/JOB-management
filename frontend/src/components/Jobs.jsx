@@ -3,14 +3,25 @@ import Navbar from './shared/Navbar';
 import Job from './Job';
 import { useDispatch, useSelector } from 'react-redux';
 import useGetAllJobs from '@/hooks/useGetAllJobs';
-import { setSearchedQuery } from '@/redux/jobSlice';
+import { setSearchedQuery, setCurrentPage } from '@/redux/jobSlice';
 import { Button } from './ui/button';
+import FilterCard from './FilterCard';
+import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Jobs = () => {
     const dispatch = useDispatch();
     useGetAllJobs();
-    const { allJobs, searchedQuery } = useSelector(store => store.job);
+    const { allJobs, searchedQuery, loading, currentPage, totalPages } = useSelector(store => store.job);
 
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            dispatch(setCurrentPage(newPage));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    // Since backend handles basic keyword search, client side filter can be minimal or removed 
+    // depending on if we want double-filtering. For now, I'll keep it as-is for the searchedQuery.
     const filteredJobs = allJobs.filter(job => {
         if (!searchedQuery) return true;
         const query = searchedQuery.toLowerCase();
@@ -35,25 +46,26 @@ const Jobs = () => {
                     </p>
                 </div>
 
-                <div className="flex gap-8">
-                    {/* Filter Sidebar Placeholder */}
-                    <div className="hidden lg:block w-64 shrink-0 space-y-6">
-                        <div className="p-6 border border-border/50 rounded-2xl bg-card">
-                            <h2 className="font-semibold text-lg mb-4 tracking-tight">Filter Jobs</h2>
-                            <p className="text-sm text-muted-foreground">Filters coming soon...</p>
-                        </div>
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Filter Sidebar */}
+                    <div className="w-full lg:w-64 shrink-0">
+                        <FilterCard />
                     </div>
 
                     {/* Job Grid */}
                     <div className="flex-1">
-                        {allJobs.length === 0 ? (
+                        {loading ? (
+                            <div className="h-96 flex items-center justify-center">
+                                <Loader2 className="h-10 w-10 animate-spin text-primary/50" />
+                            </div>
+                        ) : allJobs.length === 0 ? (
                             <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-2xl bg-muted/5">
                                 <p className="text-muted-foreground font-light mb-4 text-center px-4">
                                     No live jobs found right now. Check back later!
                                 </p>
                             </div>
                         ) : filteredJobs.length === 0 ? (
-                            <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-2xl bg-muted/5">
+                            <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-2xl bg-muted/5 transition-all">
                                 <p className="text-muted-foreground font-light mb-4 text-center px-4">
                                     No jobs found matching "{searchedQuery}".
                                 </p>
@@ -62,14 +74,55 @@ const Jobs = () => {
                                     onClick={() => dispatch(setSearchedQuery(""))}
                                     className="text-primary hover:underline"
                                 >
-                                    Clear Search
+                                    Clear Filters
                                 </Button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredJobs.map((job) => (
-                                    <Job key={job._id} job={job} />
-                                ))}
+                            <div className="space-y-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
+                                    {filteredJobs.map((job) => (
+                                        <Job key={job._id} job={job} />
+                                    ))}
+                                </div>
+
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="flex items-center justify-center space-x-2 pt-10 border-t border-border/40">
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                            disabled={currentPage === 1}
+                                            className="rounded-full h-10 w-10 border-border/50"
+                                        >
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Button>
+                                        
+                                        <div className="flex items-center space-x-1">
+                                            {[...Array(totalPages)].map((_, index) => (
+                                                <Button
+                                                    key={index + 1}
+                                                    variant={currentPage === index + 1 ? "default" : "ghost"}
+                                                    size="sm"
+                                                    onClick={() => handlePageChange(index + 1)}
+                                                    className={`h-10 w-10 rounded-full font-medium ${currentPage === index + 1 ? 'shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+                                                >
+                                                    {index + 1}
+                                                </Button>
+                                            ))}
+                                        </div>
+
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                            disabled={currentPage === totalPages}
+                                            className="rounded-full h-10 w-10 border-border/50"
+                                        >
+                                            <ChevronRight className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

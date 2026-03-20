@@ -54,7 +54,16 @@ const ApplicantsTable = () => {
                                 <TableCell>{item?.applicant?.phoneNumber}</TableCell>
                                 <TableCell>
                                     {
-                                        item?.applicant?.profile?.resume ? <a className="text-primary hover:underline font-medium" href={item?.applicant?.profile?.resume} target="_blank" rel="noopener noreferrer">{item?.applicant?.profile?.resumeOriginalName}</a> : <span>NA</span>
+                                        item?.applicant?.profile?.resume ? (
+                                            <a 
+                                                className="inline-flex items-center px-3 py-1.5 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors font-medium text-xs whitespace-nowrap" 
+                                                href={item?.applicant?.profile?.resume} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                            >
+                                                {item?.applicant?.profile?.resumeOriginalName || "View Resume"}
+                                            </a>
+                                        ) : <span className="text-muted-foreground italic text-sm">NA</span>
                                     }
                                 </TableCell>
                                 <TableCell>{item?.applicant?.createdAt?.split("T")[0]}</TableCell>

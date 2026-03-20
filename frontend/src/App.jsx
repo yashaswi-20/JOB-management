@@ -17,6 +17,7 @@ import MyApplications from "./components/MyApplications.jsx"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import AdminRoute from "./components/admin/AdminRoute.jsx"
 import StudentRoute from "./components/StudentRoute.jsx"
+import JobSetup from "./components/admin/JobSetup.jsx"
 import { Toaster } from 'sonner'
 
 function App() {
@@ -41,6 +42,10 @@ function App() {
     {
       path:'/admin/jobs/:id/applicants',
       element:<AdminRoute><Applicants/></AdminRoute>
+    },
+    {
+      path:'/admin/jobs/:id/edit',
+      element:<AdminRoute><JobSetup/></AdminRoute>
     },
     {
       path:'/admin/companies',

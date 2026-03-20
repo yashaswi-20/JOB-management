@@ -19,7 +19,14 @@ const AppliedJobTable = () => {
                 </TableHeader>
                 <TableBody>
                     {
-                        allAppliedJobs.length <= 0 ? <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground font-light italic">You haven't applied to any jobs yet.</TableCell></TableRow> : allAppliedJobs.map((appliedJob) => (
+                        !allAppliedJobs || allAppliedJobs.length <= 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground font-light italic">
+                                    You haven't applied to any jobs yet.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            allAppliedJobs.map((appliedJob) => (
                             <TableRow key={appliedJob._id} className="border-border/40 hover:bg-muted/30 transition-colors">
                                 <TableCell>{appliedJob?.createdAt?.split("T")[0]}</TableCell>
                                 <TableCell className="font-medium">{appliedJob?.job?.title || "N/A"}</TableCell>
@@ -30,8 +37,10 @@ const AppliedJobTable = () => {
                                     </Badge>
                                 </TableCell>
                             </TableRow>
-                        ))
-                    }
+                            )
+                        )
+                    )
+                }
                 </TableBody>
             </Table>
         </div>

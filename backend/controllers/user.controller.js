@@ -134,10 +134,16 @@ export const updateProfile = async (req, res) => {
         // Handle file upload — treat as resume (PDF) or profile photo (image) based on mimetype
         if (file) {
             const fileUri = getDataUri(file);
+            const isImage = file.mimetype.startsWith('image/');
+            const isPdf = file.mimetype === 'application/pdf';
+            
             const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                resource_type: 'auto'
+                resource_type: (isImage || isPdf) ? 'image' : 'raw',
+                use_filename: true,
+                unique_filename: true
             });
-            if (file.mimetype.startsWith('image/')) {
+
+            if (isImage) {
                 user.profile.profilePhoto = cloudResponse.secure_url;
             } else {
                 user.profile.resume = cloudResponse.secure_url;

@@ -3,15 +3,15 @@ import api from "@/lib/axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const useGetAllCompanies = () => {
+const useGetPublicCompanies = () => {
     const dispatch = useDispatch();
     const { currentPage } = useSelector(store => store.company);
 
     useEffect(() => {
-        const fetchCompanies = async () => {
+        const fetchPublicCompanies = async () => {
             try {
                 dispatch(setLoading(true));
-                const res = await api.get(`/company/get?page=${currentPage}`, { withCredentials: true });
+                const res = await api.get(`/company/all?page=${currentPage}`, { withCredentials: true });
                 if (res.data.success) {
                     dispatch(setCompanies(res.data.companies));
                     dispatch(setPagination({
@@ -26,8 +26,8 @@ const useGetAllCompanies = () => {
                 dispatch(setLoading(false));
             }
         }
-        fetchCompanies();
+        fetchPublicCompanies();
     }, [dispatch, currentPage])
 }
 
-export default useGetAllCompanies;
+export default useGetPublicCompanies;
