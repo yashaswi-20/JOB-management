@@ -5,6 +5,7 @@ export const verifyTurnstileToken = async (token) => {
     if (!token) {
         return { success: false, msg: "CAPTCHA token is missing" };
     }
+    console.log("Verifying token starting with:", token ? token.substring(0, 15) + "..." : "EMPTY OR UNDEFINED");
 
     try {
         const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
@@ -23,8 +24,8 @@ export const verifyTurnstileToken = async (token) => {
         if (data.success) {
             return { success: true };
         } else {
-            console.error("Turnstile verification failed:", data);
-            return { success: false, msg: "CAPTCHA verification failed" };
+            console.error("Turnstile verification failed Details:", JSON.stringify(data), "Token Length:", token ? token.length : 0);
+            return { success: false, msg: "CAPTCHA verification failed: " + (data['error-codes']?.[0] || 'Unknown error') };
         }
     } catch (error) {
         console.error("Error verifying Turnstile token:", error);

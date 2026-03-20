@@ -43,10 +43,10 @@ const SignUp = () => {
     formData.append("phoneNumber", input.phoneNumber);
     formData.append("password", input.password);
     formData.append("role", input.role);
+    formData.append("captchaToken", captchaToken);
     if (input.file) {
       formData.append("file", input.file);
     }
-    formData.append("captchaToken", captchaToken);
 
     try {
       setLoading(true);
