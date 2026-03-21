@@ -29,7 +29,8 @@ export const registerCompany = async (req, res) => {
             success: true
         })
     } catch (error) {
-        console.log(error);
+        console.error('Register company error:', error);
+        return res.status(500).json({ message: 'Internal server error', success: false })
     }
 }
 export const getCompany = async (req, res) => {
@@ -56,7 +57,8 @@ export const getCompany = async (req, res) => {
             success: true
         })
     } catch (error) {
-        console.log(error);
+        console.error('Get companies error:', error);
+        return res.status(500).json({ message: 'Internal server error', success: false })
     }
 }
 // get company by id
@@ -75,14 +77,23 @@ export const getCompanyById = async (req, res) => {
             success: true
         })
     } catch (error) {
-        console.log(error);
+        console.error('Get company by ID error:', error);
+        return res.status(500).json({ message: 'Internal server error', success: false })
     }
 }
 export const updateCompany = async (req, res) => {
     try {
         const { name, description, website, location } = req.body;
-        const updateData = { name, description, website, location };
 
+        const company = await Company.findById(req.params.id);
+        if (!company) {
+            return res.status(404).json({ msg: 'Company not found', success: false })
+        }
+        if (company.userId.toString() !== req.id) {
+            return res.status(403).json({ msg: 'You can only update your own company', success: false })
+        }
+
+        const updateData = { name, description, website, location };
         const file = req.file;
         if (file) {
             const fileUri = getDataUri(file);
@@ -91,13 +102,11 @@ export const updateCompany = async (req, res) => {
         }
 
         const update = await Company.findByIdAndUpdate(req.params.id, updateData, { new: true });
-        if (!update) {
-            return res.status(404).json({ msg: 'Company not found' })
-        }
         return res.status(200).json({ msg: 'Company updated successfully', company: update })
 
     } catch (err) {
-        return res.status(500).json({ msg: err.message, success: false })
+        console.error('Company update error:', err);
+        return res.status(500).json({ msg: 'Internal server error', success: false })
     }
 }
 

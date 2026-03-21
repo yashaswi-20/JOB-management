@@ -12,6 +12,9 @@ export const register = async (req, res) => {
         if (!fullname || !email || !password || !phoneNumber || !role) {
             return res.status(400).json({ msg: 'All fields are required' })
         }
+        if (password.length < 8) {
+            return res.status(400).json({ msg: 'Password must be at least 8 characters long' })
+        }
 
         const captchaVerification = await verifyTurnstileToken(captchaToken);
         if (!captchaVerification.success) {
@@ -44,7 +47,8 @@ export const register = async (req, res) => {
         return res.status(201).json({ msg: 'User registered successfully', success: true })
 
     } catch (err) {
-        return res.status(500).json({ msg: err.message })
+        console.error('Register error:', err);
+        return res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -95,7 +99,8 @@ export const login = async (req, res) => {
         })
 
     } catch (err) {
-        return res.status(500).json({ msg: err.message })
+        console.error('Login error:', err);
+        return res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -111,7 +116,8 @@ export const logout = async (req, res) => {
             success: true
         })
     } catch (err) {
-        return res.status(500).json({ msg: err.message })
+        console.error('Logout error:', err);
+        return res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -174,6 +180,7 @@ export const updateProfile = async (req, res) => {
         })
 
     } catch (err) {
-        return res.status(500).json({ msg: err.message })
+        console.error('Profile update error:', err);
+        return res.status(500).json({ msg: 'Internal server error' })
     }
 }

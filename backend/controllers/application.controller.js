@@ -1,6 +1,7 @@
 import Application from "../models/application.model.js";
 import Job from "../models/job.model.js";
 
+
 export const applyJob = async (req, res) => {
     try {
         const { id: jobId } = req.params;
@@ -32,8 +33,9 @@ export const applyJob = async (req, res) => {
         })
 
     } catch (err) {
+        console.error('Apply job error:', err);
         return res.status(500).json({ 
-            message: err.message,
+            message: 'Internal server error',
             success: false
         })
     }
@@ -63,7 +65,8 @@ export const getAppliedJobs = async (req, res) => {
         })
 
     } catch (err) {
-        return res.status(500).json({ msg: err.message })
+        console.error('Get applied jobs error:', err);
+        return res.status(500).json({ message: 'Internal server error', success: false })
     }
 }
 
@@ -91,7 +94,8 @@ export const getApplicants = async (req, res) => {
             success: true
         })
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        console.error('Get applicants error:', err);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 
@@ -100,13 +104,24 @@ export const updateStatus = async (req, res) => {
         const applicationId = req.params.id;
         const { status } = req.body;
         if (!status) {
-            return res.status(404).json({ message: "status not found" });
+            return res.status(400).json({ message: "Status is required", success: false });
         }
-        const application = await Application.findById(applicationId);
 
-        if (!application) {
-            return res.status(404).json({ message: "Applicaiton not found" })
+        const allowedStatuses = ['Pending', 'Accepted', 'Rejected'];
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({ message: "Invalid status value", success: false });
         }
+
+        const application = await Application.findById(applicationId);
+        if (!application) {
+            return res.status(404).json({ message: "Application not found", success: false })
+        }
+
+        const job = await Job.findById(application.job);
+        if (!job || job.createdBy.toString() !== req.id) {
+            return res.status(403).json({ message: "You can only update applications for your own jobs", success: false });
+        }
+
         application.status = status;
         await application.save();
 
@@ -115,6 +130,7 @@ export const updateStatus = async (req, res) => {
             success: true
         });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        console.error('Update status error:', err);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }

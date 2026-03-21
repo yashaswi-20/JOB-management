@@ -37,8 +37,8 @@ export const getAllJobs = async (req, res) => {
 
         const query = {
             $or: [
-                { title: { $regex: keyword, $options: 'i' } },
-                { description: { $regex: keyword, $options: 'i' } },
+                { title: { $regex: keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } },
+                { description: { $regex: keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } },
             ]
         };
 
@@ -119,6 +119,14 @@ export const updateJob = async (req, res) => {
         const jobId = req.params.id;
         const { title, description, requirements, salary, location, jobType, position, experienceYear, companyId } = req.body;
         
+        const existingJob = await Job.findById(jobId);
+        if (!existingJob) {
+            return res.status(404).json({ message: 'Job not found.', success: false })
+        }
+        if (existingJob.createdBy.toString() !== req.id) {
+            return res.status(403).json({ message: 'You can only update your own job postings', success: false })
+        }
+
         const updateData = {};
         if (title) updateData.title = title;
         if (description) updateData.description = description;
@@ -132,13 +140,6 @@ export const updateJob = async (req, res) => {
 
         const job = await Job.findByIdAndUpdate(jobId, updateData, { new: true });
 
-        if (!job) {
-            return res.status(404).json({
-                message: "Job not found.",
-                success: false
-            })
-        }
-
         return res.status(200).json({
             message: "Job updated successfully.",
             job,
@@ -146,7 +147,7 @@ export const updateJob = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error);
+        console.error('Job update error:', error);
         return res.status(500).json({
             message: "Internal server error",
             success: false
