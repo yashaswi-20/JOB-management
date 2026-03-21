@@ -5,22 +5,27 @@ import { Input } from '../ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '@/lib/axios';
-import { setAllAdminJobs, setLoading } from '@/redux/jobSlice';
-import { Loader2, Search } from 'lucide-react';
+import { setAllAdminJobs, setLoading, setPagination, setCurrentPage } from '@/redux/jobSlice';
+import { Loader2, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const AdminJobs = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { allAdminJobs, loading } = useSelector(store => store.job);
+    const { allAdminJobs, loading, currentPage, totalPages, totalJobs } = useSelector(store => store.job);
     const [search, setSearch] = useState("");
 
     useEffect(() => {
         const fetchAdminJobs = async () => {
             try {
                 dispatch(setLoading(true));
-                const res = await api.get('/job/getadminjobs');
+                const res = await api.get(`/job/getadminjobs?page=${currentPage}`);
                 if (res.data.success) {
                     dispatch(setAllAdminJobs(res.data.jobs));
+                    dispatch(setPagination({
+                        currentPage: res.data.currentPage,
+                        totalPages: res.data.totalPages,
+                        totalJobs: res.data.totalJobs
+                    }));
                 }
             } catch (error) {
                 console.log(error);
@@ -30,7 +35,7 @@ const AdminJobs = () => {
             }
         };
         fetchAdminJobs();
-    }, [dispatch]);
+    }, [dispatch, currentPage]);
 
     const filteredJobs = allAdminJobs.filter((job) => 
         job.title.toLowerCase().includes(search.toLowerCase())
@@ -83,53 +88,87 @@ const AdminJobs = () => {
                         </Button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredJobs.map((job) => (
-                            <div 
-                                key={job._id}
-                                className="group p-6 rounded-2xl border border-border/50 bg-card transition-all shadow-sm hover:shadow-md flex flex-col h-full"
-                            >
-                                <div className="mb-4">
-                                    <h2 className="text-xl font-semibold tracking-tight">{job.title}</h2>
-                                    <p className="text-sm text-muted-foreground font-light mt-1">
-                                        {job.location} • {job.jobType}
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-2 mb-6 flex-wrap">
-                                    <span className="inline-flex items-center rounded-full border border-border bg-muted/30 px-2.5 py-0.5 text-xs font-semibold text-foreground">
-                                        {job.position} Positions
-                                    </span>
-                                    <span className="inline-flex items-center rounded-full border border-border bg-muted/30 px-2.5 py-0.5 text-xs font-semibold text-foreground">
-                                        {job.salary} LPA
-                                    </span>
-                                    <span className="inline-flex items-center rounded-full border border-border bg-muted/30 px-2.5 py-0.5 text-xs font-semibold text-foreground">
-                                        {job.experienceYear}y Exp
-                                    </span>
-                                </div>
-                                
-                                <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between gap-2">
-                                    <span className="text-xs text-muted-foreground">
-                                        {new Date(job.createdAt).toLocaleDateString()}
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                        <Button 
-                                            onClick={() => navigate(`/admin/jobs/${job._id}/edit`)}
-                                            variant="outline" 
-                                            className="h-8 text-xs font-medium px-3 rounded-lg"
-                                        >
-                                            Edit
-                                        </Button>
-                                        <Button 
-                                            onClick={() => navigate(`/admin/jobs/${job._id}/applicants`)}
-                                            variant="ghost" 
-                                            className="h-8 text-xs font-medium px-3 text-primary hover:bg-primary/10 hover:text-primary rounded-lg"
-                                        >
-                                            Applicants
-                                        </Button>
+                    <div className="flex flex-col gap-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredJobs.map((job) => (
+                                <div 
+                                    key={job._id}
+                                    className="group p-6 rounded-2xl border border-border/50 bg-card transition-all shadow-sm hover:shadow-md flex flex-col h-full"
+                                >
+                                    <div className="mb-4">
+                                        <h2 className="text-xl font-semibold tracking-tight">{job.title}</h2>
+                                        <p className="text-sm text-muted-foreground font-light mt-1">
+                                            {job.location} • {job.jobType}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2 mb-6 flex-wrap">
+                                        <span className="inline-flex items-center rounded-full border border-border bg-muted/30 px-2.5 py-0.5 text-xs font-semibold text-foreground">
+                                            {job.position} Positions
+                                        </span>
+                                        <span className="inline-flex items-center rounded-full border border-border bg-muted/30 px-2.5 py-0.5 text-xs font-semibold text-foreground">
+                                            {job.salary} LPA
+                                        </span>
+                                        <span className="inline-flex items-center rounded-full border border-border bg-muted/30 px-2.5 py-0.5 text-xs font-semibold text-foreground">
+                                            {job.experienceYear}y Exp
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between gap-2">
+                                        <span className="text-xs text-muted-foreground">
+                                            {new Date(job.createdAt).toLocaleDateString()}
+                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <Button 
+                                                onClick={() => navigate(`/admin/jobs/${job._id}/edit`)}
+                                                variant="outline" 
+                                                className="h-8 text-xs font-medium px-3 rounded-lg"
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button 
+                                                onClick={() => navigate(`/admin/jobs/${job._id}/applicants`)}
+                                                variant="ghost" 
+                                                className="h-8 text-xs font-medium px-3 text-primary hover:bg-primary/10 hover:text-primary rounded-lg"
+                                            >
+                                                Applicants
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
+                            ))}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-border/40">
+                                <p className="text-sm text-muted-foreground font-light">
+                                    Showing <span className="font-medium text-foreground">{(currentPage - 1) * 6 + 1}</span> to <span className="font-medium text-foreground">{Math.min(currentPage * 6, totalJobs)}</span> of <span className="font-medium text-foreground">{totalJobs}</span> posted jobs
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <Button 
+                                        variant="outline" 
+                                        size="icon"
+                                        onClick={() => dispatch(setCurrentPage(Math.max(1, currentPage - 1)))}
+                                        disabled={currentPage === 1}
+                                        className="rounded-full h-10 w-10 border-border/50 hover:bg-muted/50"
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    <span className="text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-full border border-border/50">
+                                        Page {currentPage} of {totalPages}
+                                    </span>
+                                    <Button 
+                                        variant="outline" 
+                                        size="icon"
+                                        onClick={() => dispatch(setCurrentPage(Math.min(totalPages, currentPage + 1)))}
+                                        disabled={currentPage === totalPages}
+                                        className="rounded-full h-10 w-10 border-border/50 hover:bg-muted/50"
+                                    >
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
             </main>

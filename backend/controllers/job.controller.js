@@ -87,13 +87,27 @@ export const getJobById = async (req, res) => {
 export const getAdminJobs = async (req, res) => {
     try {
         const adminId = req.id;
-        const jobs = await Job.find({ createdBy: adminId }).populate({
-            path: 'company'
-        }).sort({ createdAt: -1 });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 6;
+        const skip = (page - 1) * limit;
+
+        const totalJobs = await Job.countDocuments({ createdBy: adminId });
+        const jobs = await Job.find({ createdBy: adminId })
+            .populate({ path: 'company' })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
         if (!jobs || jobs.length === 0) {
             return res.status(404).json({ msg: 'No jobs found', success: false })
         }
-        return res.status(200).json({ jobs, success: true })
+        return res.status(200).json({ 
+            jobs, 
+            totalJobs, 
+            totalPages: Math.ceil(totalJobs / limit), 
+            currentPage: page,
+            success: true 
+        })
     } catch (err) {
         return res.status(500).json({ msg: err.message, success: false })
     }
