@@ -4,7 +4,8 @@ const companySlice = createSlice({
     name: "company",
     initialState: {
         singleCompany: null,
-        companies: [],
+        adminCompanies: [],
+        publicCompanies: [],
         searchCompanyByText: "",
         loading: false,
         currentPage: 1,
@@ -15,8 +16,16 @@ const companySlice = createSlice({
         setSingleCompany: (state, action) => {
             state.singleCompany = action.payload;
         },
+        setAdminCompanies: (state, action) => {
+            state.adminCompanies = action.payload;
+        },
+        setPublicCompanies: (state, action) => {
+            state.publicCompanies = action.payload;
+        },
+        // For compatibility during transition, keeping setCompanies
         setCompanies: (state, action) => {
-            state.companies = action.payload;
+            state.adminCompanies = action.payload;
+            state.publicCompanies = action.payload;
         },
         setSearchCompanyByText: (state, action) => {
             state.searchCompanyByText = action.payload;
@@ -37,6 +46,8 @@ const companySlice = createSlice({
 
 export const { 
     setSingleCompany, 
+    setAdminCompanies,
+    setPublicCompanies,
     setCompanies, 
     setSearchCompanyByText, 
     setLoading, 

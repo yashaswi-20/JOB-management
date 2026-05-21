@@ -8,7 +8,7 @@ import { ExternalLink, MapPin, Loader2 } from 'lucide-react';
 
 const Browse = () => {
     useGetPublicCompanies();
-    const { companies, searchCompanyByText, currentPage, totalCompanies, totalPages, loading } = useSelector(store => store.company);
+    const { publicCompanies, searchCompanyByText, currentPage, totalCompanies, totalPages, loading } = useSelector(store => store.company);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -17,7 +17,7 @@ const Browse = () => {
         }
     }, [dispatch]);
 
-    const filteredCompanies = companies.filter(company => {
+    const filteredCompanies = (publicCompanies || []).filter(company => {
         if (!searchCompanyByText) return true;
         return company.name.toLowerCase().includes(searchCompanyByText.toLowerCase()) || 
                company.location?.toLowerCase().includes(searchCompanyByText.toLowerCase());

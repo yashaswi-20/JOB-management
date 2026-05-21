@@ -1,4 +1,4 @@
-import { setCompanies, setLoading, setPagination } from "@/redux/companySlice";
+import { setAdminCompanies, setLoading, setPagination } from "@/redux/companySlice";
 import api from "@/lib/axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +13,7 @@ const useGetAllCompanies = () => {
                 dispatch(setLoading(true));
                 const res = await api.get(`/company/get?page=${currentPage}`, { withCredentials: true });
                 if (res.data.success) {
-                    dispatch(setCompanies(res.data.companies));
+                    dispatch(setAdminCompanies(res.data.companies));
                     dispatch(setPagination({
                         currentPage: res.data.currentPage,
                         totalPages: res.data.totalPages,

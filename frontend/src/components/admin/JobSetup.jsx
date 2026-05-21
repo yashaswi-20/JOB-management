@@ -27,7 +27,7 @@ const JobSetup = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const { companies } = useSelector(store => store.company);
+    const { adminCompanies } = useSelector(store => store.company);
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
@@ -123,7 +123,7 @@ const JobSetup = () => {
                                 required
                             >
                                 <option value="" disabled>Select a Company...</option>
-                                {companies.map((c) => (
+                                {(adminCompanies || []).map((c) => (
                                     <option key={c._id} value={c._id}>{c.name}</option>
                                 ))}
                             </select>

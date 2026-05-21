@@ -51,7 +51,12 @@ export const getAllJobs = async (req, res) => {
             .limit(limit);
 
         if (!jobs || jobs.length === 0) {
-            return res.status(404).json({ msg: 'No jobs found', success: false })
+            return res.status(200).json({
+                jobs: [],
+                success: true,
+                message: "No jobs found."
+            })
+
         }
 
         return res.status(200).json({ 
@@ -99,7 +104,12 @@ export const getAdminJobs = async (req, res) => {
             .limit(limit);
 
         if (!jobs || jobs.length === 0) {
-            return res.status(404).json({ msg: 'No jobs found', success: false })
+            return res.status(200).json({
+                jobs: [],
+                success: true,
+                message: "No jobs found."
+            })
+
         }
         return res.status(200).json({ 
             jobs, 

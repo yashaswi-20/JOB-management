@@ -37,8 +37,8 @@ const AdminJobs = () => {
         fetchAdminJobs();
     }, [dispatch, currentPage]);
 
-    const filteredJobs = allAdminJobs.filter((job) => 
-        job.title.toLowerCase().includes(search.toLowerCase())
+    const filteredJobs = (allAdminJobs || []).filter((job) => 
+        job?.title?.toLowerCase().includes(search.toLowerCase())
     );
 
     return (

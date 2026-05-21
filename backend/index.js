@@ -1,5 +1,6 @@
 import cookieParser from 'cookie-parser';
 import express from 'express';
+import multer from 'multer';
 import cors from 'cors'
 import dotenv from 'dotenv'
 import connectDb from './utils/db.js';
@@ -29,6 +30,18 @@ app.use('/api/v1/user',userRoutes);
 app.use('/api/v1/company',companyRoutes);
 app.use('/api/v1/job',jobRoutes);
 app.use('/api/v1/application',applicationRoute);
+
+// error handling middleware
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ msg: err.message, success: false });
+    }
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({
+        msg: err.message || 'Internal Server Error',
+        success: false
+    });
+});
 
 const PORT=process.env.PORT || 8000;
 app.listen(PORT,()=>{

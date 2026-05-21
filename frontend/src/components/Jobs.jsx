@@ -22,7 +22,7 @@ const Jobs = () => {
 
     // Since backend handles basic keyword search, client side filter can be minimal or removed 
     // depending on if we want double-filtering. For now, I'll keep it as-is for the searchedQuery.
-    const filteredJobs = allJobs.filter(job => {
+    const filteredJobs = (allJobs || []).filter(job => {
         if (!searchedQuery) return true;
         const query = searchedQuery.toLowerCase();
         return (

@@ -25,12 +25,13 @@ const CompanySetup = () => {
         const fetchCompanyById = async () => {
             try {
                 const res = await api.get(`/company/get/${params.id}`);
-                if (res.data) {
+                if (res.data.success && res.data.company) {
+                    const company = res.data.company;
                     setInput({
-                        name: res.data.name || "",
-                        description: res.data.description || "",
-                        website: res.data.website || "",
-                        location: res.data.location || "",
+                        name: company.name || "",
+                        description: company.description || "",
+                        website: company.website || "",
+                        location: company.location || "",
                         file: null
                     });
                 }

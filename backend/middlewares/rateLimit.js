@@ -1,9 +1,9 @@
 import rateLimit from 'express-rate-limit';
 
-// Rate limiter for authentication routes (login, register)
+
 export const authLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 10, // Limit each IP to 10 requests per `window` (here, per hour)
+    windowMs: 60 * 60 * 1000, 
+    max: 10, // Limit each IP to 10 requests 
     message: {
         success: false,
         msg: "Too many accounts created or login attempts from this IP, please try again after an hour"

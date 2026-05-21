@@ -25,7 +25,7 @@ const PostJob = () => {
     const navigate = useNavigate();
 
     // Pull companies to populate the dropdown
-    const { companies } = useSelector(store => store.company);
+    const { adminCompanies } = useSelector(store => store.company);
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
@@ -85,7 +85,7 @@ const PostJob = () => {
                         </div>
                         <div className="space-y-2">
                             <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Company</Label>
-                            {companies.length === 0 ? (
+                            {(adminCompanies || []).length === 0 ? (
                                 <p className="text-sm text-destructive font-medium pt-3">
                                     You must create a company first!
                                 </p>
@@ -98,7 +98,7 @@ const PostJob = () => {
                                     required
                                 >
                                     <option value="" disabled>Select a Company...</option>
-                                    {companies.map((c) => (
+                                    {(adminCompanies || []).map((c) => (
                                         <option key={c._id} value={c._id}>{c.name}</option>
                                     ))}
                                 </select>
@@ -197,7 +197,7 @@ const PostJob = () => {
                     <div className="pt-6 border-t border-border/50">
                         <Button 
                             type="submit" 
-                            disabled={loading || companies.length === 0}
+                            disabled={loading || (adminCompanies || []).length === 0}
                             className="w-full h-12 rounded-lg shadow-md mt-2"
                         >
                             {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Post Job Live"}

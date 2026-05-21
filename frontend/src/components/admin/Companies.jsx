@@ -13,11 +13,11 @@ const Companies = () => {
     useGetAllCompanies();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { companies, loading, currentPage, totalPages } = useSelector(store => store.company);
+    const { adminCompanies, loading, currentPage, totalPages } = useSelector(store => store.company);
     const [filterText, setFilterText] = useState("");
 
-    // Defensive check to ensure companies is always an array
-    const filteredCompanies = Array.isArray(companies) ? companies.filter(c => 
+    // Defensive check to ensure adminCompanies is always an array
+    const filteredCompanies = Array.isArray(adminCompanies) ? adminCompanies.filter(c => 
         c.name.toLowerCase().includes(filterText.toLowerCase())
     ) : [];
 
@@ -61,7 +61,7 @@ const Companies = () => {
                 ) : filteredCompanies.length === 0 ? (
                     <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-xl bg-muted/5">
                         <p className="text-muted-foreground font-light mb-4">
-                            {companies.length === 0 ? "You haven't registered any companies yet." : "No companies found matching your search."}
+                            {(adminCompanies || []).length === 0 ? "You haven't registered any companies yet." : "No companies found matching your search."}
                         </p>
                     </div>
                 ) : (

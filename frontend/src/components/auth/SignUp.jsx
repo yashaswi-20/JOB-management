@@ -27,7 +27,21 @@ const SignUp = () => {
   };
   
   const changeFileHandler = (e) => {
-    setInput({ ...input, file: e.target.files?.[0] });
+    const file = e.target.files?.[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Only images (JPEG, PNG, WebP, GIF) are allowed");
+        e.target.value = ""; // Reset input
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error("File size must be less than 5MB");
+        e.target.value = ""; // Reset input
+        return;
+      }
+    }
+    setInput({ ...input, file: file });
   };
 
   const submitHandler = async (e) => {
@@ -159,7 +173,7 @@ const SignUp = () => {
                   </div>
                 </div>
                 <input
-                  accept="image/*"
+                  accept=".jpg,.jpeg,.png,.webp,.gif"
                   type="file"
                   onChange={changeFileHandler}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"

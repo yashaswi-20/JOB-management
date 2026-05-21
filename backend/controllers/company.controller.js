@@ -1,4 +1,6 @@
 import Company from "../models/company.model.js";
+import Users from "../models/user.model.js";
+import jwt from "jsonwebtoken";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 
@@ -44,9 +46,10 @@ export const getCompany = async (req, res) => {
         const companies = await Company.find({ userId }).skip(skip).limit(limit);
 
         if (!companies || companies.length === 0) {
-            return res.status(404).json({
-                message: "Companies not found.",
-                success: false
+            return res.status(200).json({
+                companies: [],
+                success: true,
+                message: "No companies found for this user."
             })
         }
         return res.status(200).json({
@@ -72,6 +75,13 @@ export const getCompanyById = async (req, res) => {
                 success: false
             })
         }
+        // Ownership check
+        if (company.userId.toString() !== req.id) {
+            return res.status(403).json({
+                message: "You can only access your own company details.",
+                success: false
+            });
+        }
         return res.status(200).json({
             company,
             success: true
@@ -93,7 +103,12 @@ export const updateCompany = async (req, res) => {
             return res.status(403).json({ msg: 'You can only update your own company', success: false })
         }
 
-        const updateData = { name, description, website, location };
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (description) updateData.description = description;
+        if (website) updateData.website = website;
+        if (location) updateData.location = location;
+
         const file = req.file;
         if (file) {
             const fileUri = getDataUri(file);
@@ -102,7 +117,7 @@ export const updateCompany = async (req, res) => {
         }
 
         const update = await Company.findByIdAndUpdate(req.params.id, updateData, { new: true });
-        return res.status(200).json({ msg: 'Company updated successfully', company: update })
+        return res.status(200).json({ msg: 'Company updated successfully', company: update, success: true })
 
     } catch (err) {
         console.error('Company update error:', err);
@@ -112,6 +127,20 @@ export const updateCompany = async (req, res) => {
 
 export const getAllCompanies = async (req, res) => {
     try {
+        // Prevent recruiters from seeing all companies via this public endpoint
+        // If they are logged in, check their role
+        const token = req.cookies.token;
+        if (token) {
+            const decoded = jwt.verify(token, process.env.SECRET_KEY);
+            const user = await Users.findById(decoded.userId).select('role');
+            if (user && user.role === 'Recruiter') {
+                return res.status(403).json({
+                    message: "Recruiters are not allowed to use the public browse endpoint.",
+                    success: false
+                });
+            }
+        }
+        
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 6;
         const skip = (page - 1) * limit;
@@ -120,9 +149,10 @@ export const getAllCompanies = async (req, res) => {
         const companies = await Company.find({}).skip(skip).limit(limit);
 
         if (!companies || companies.length === 0) {
-            return res.status(404).json({
-                message: "No companies found.",
-                success: false
+            return res.status(200).json({
+                companies: [],
+                success: true,
+                message: "No companies found."
             })
         }
         return res.status(200).json({
