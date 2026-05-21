@@ -41,24 +41,23 @@ export const getCompany = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 6;
         const skip = (page - 1) * limit;
+        const search = req.query.search || "";
 
-        const totalCompanies = await Company.countDocuments({ userId });
-        const companies = await Company.find({ userId }).skip(skip).limit(limit);
-
-        if (!companies || companies.length === 0) {
-            return res.status(200).json({
-                companies: [],
-                success: true,
-                message: "No companies found for this user."
-            })
+        const query = { userId };
+        if (search) {
+            query.name = { $regex: search, $options: "i" };
         }
+
+        const totalCompanies = await Company.countDocuments(query);
+        const companies = await Company.find(query).skip(skip).limit(limit);
+
         return res.status(200).json({
-            companies,
+            companies: companies || [],
             totalCompanies,
             totalPages: Math.ceil(totalCompanies / limit),
             currentPage: page,
             success: true
-        })
+        });
     } catch (error) {
         console.error('Get companies error:', error);
         return res.status(500).json({ message: 'Internal server error', success: false })

@@ -13,13 +13,33 @@ const Companies = () => {
     useGetAllCompanies();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { adminCompanies, loading, currentPage, totalPages } = useSelector(store => store.company);
-    const [filterText, setFilterText] = useState("");
+    const { adminCompanies, loading, currentPage, totalPages, searchCompanyByText } = useSelector(store => store.company);
+    const [filterText, setFilterText] = useState(searchCompanyByText);
+
+    // Cleanup search and page on unmount
+    useEffect(() => {
+        return () => {
+            dispatch(setSearchCompanyByText(""));
+            dispatch(setCurrentPage(1));
+        };
+    }, [dispatch]);
+
+    // Debounce the search input
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if (filterText !== searchCompanyByText) {
+                dispatch(setSearchCompanyByText(filterText));
+                dispatch(setCurrentPage(1));
+            }
+        }, 300);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [filterText, dispatch, searchCompanyByText]);
 
     // Defensive check to ensure adminCompanies is always an array
-    const filteredCompanies = Array.isArray(adminCompanies) ? adminCompanies.filter(c => 
-        c.name.toLowerCase().includes(filterText.toLowerCase())
-    ) : [];
+    const filteredCompanies = Array.isArray(adminCompanies) ? adminCompanies : [];
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -61,7 +81,7 @@ const Companies = () => {
                 ) : filteredCompanies.length === 0 ? (
                     <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-xl bg-muted/5">
                         <p className="text-muted-foreground font-light mb-4">
-                            {(adminCompanies || []).length === 0 ? "You haven't registered any companies yet." : "No companies found matching your search."}
+                            {searchCompanyByText ? "No companies found matching your search." : "You haven't registered any companies yet."}
                         </p>
                     </div>
                 ) : (

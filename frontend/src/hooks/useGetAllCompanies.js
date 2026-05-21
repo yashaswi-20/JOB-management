@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 const useGetAllCompanies = () => {
     const dispatch = useDispatch();
-    const { currentPage } = useSelector(store => store.company);
+    const { currentPage, searchCompanyByText } = useSelector(store => store.company);
 
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
                 dispatch(setLoading(true));
-                const res = await api.get(`/company/get?page=${currentPage}`, { withCredentials: true });
+                const res = await api.get(`/company/get?page=${currentPage}&search=${searchCompanyByText}`, { withCredentials: true });
                 if (res.data.success) {
                     dispatch(setAdminCompanies(res.data.companies));
                     dispatch(setPagination({
@@ -27,7 +27,7 @@ const useGetAllCompanies = () => {
             }
         }
         fetchCompanies();
-    }, [dispatch, currentPage])
+    }, [dispatch, currentPage, searchCompanyByText])
 }
 
 export default useGetAllCompanies;
