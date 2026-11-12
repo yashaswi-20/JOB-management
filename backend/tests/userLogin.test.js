@@ -2,6 +2,8 @@ import { jest } from '@jest/globals';
 import bcrypt from 'bcryptjs';
 import request from 'supertest';
 
+process.env.SECRET_KEY = 'jest-only-test-secret';
+
 const users = {
     findOne: jest.fn(),
 };
