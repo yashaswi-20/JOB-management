@@ -27,7 +27,7 @@ const Home = () => {
         {/* Subtle Badge */}
         <div className="inline-flex items-center rounded-full border border-border bg-muted/30 px-3 py-1 text-sm font-medium text-muted-foreground mb-8">
           <span className="flex h-2 w-2 rounded-full bg-foreground mr-2"></span>
-           Hiring
+          Revolutionizing Hiring
         </div>
 
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter text-foreground leading-[1.1] max-w-4xl mx-auto">
