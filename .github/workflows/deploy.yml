@@ -1,0 +1,70 @@
+name: Deploy TalentRush to Azure VM
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # --- CI: Test & Build Frontend ---
+      - name: Install Frontend Dependencies & Build
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+        env:
+          VITE_BACKEND_URL: /api/v1
+          VITE_TURNSTILE_SITE_KEY: 0x4AAAAAACtVZxEJWOw2qK0H
+
+      # --- CD: Deploy to Azure VM ---
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            set -e
+            echo "Pulling latest code..."
+            cd /opt/talentrush
+            git pull origin main
+
+            echo "Installing backend dependencies..."
+            cd /opt/talentrush/backend
+            npm install --omit=dev
+
+            echo "Reloading backend with PM2..."
+            pm2 reload talentrush-api --update-env
+
+      - name: Copy Frontend Build to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: "frontend/dist/*"
+          target: "/var/www/talentrush"
+          strip_components: 2
+
+      - name: Verify Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            echo "Checking Nginx and PM2 status..."
+            pm2 status
+            curl -s -o /dev/null -w "HTTP Code: %{http_code}\n" https://azure.yashaswi.me
