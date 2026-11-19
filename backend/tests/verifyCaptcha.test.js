@@ -1,6 +1,8 @@
 import { jest } from '@jest/globals';
 import { verifyTurnstileToken } from '../utils/verifyCaptcha.js';
 
+process.env.TURNSTILE_SECRET_KEY = 'jest-only-test-secret';
+
 describe('verifyTurnstileToken', () => {
     afterEach(() => {
         jest.restoreAllMocks();

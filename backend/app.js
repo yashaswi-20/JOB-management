@@ -2,13 +2,11 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js';
 import companyRoutes from './routes/company.route.js';
 import jobRoutes from './routes/job.route.js';
 import applicationRoute from './routes/application.route.js';
 
-dotenv.config({});
 
 const app = express();
 app.set('trust proxy', 1);
